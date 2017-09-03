@@ -1,0 +1,172 @@
+<!--
+  Copyright (c) 2017 Kota Suizu
+  Released under the MIT license
+  http://opensource.org/licenses/mit-license.php
+-->
+
+<script type="text/x-red" data-template-name="Twitter-User-Timeline-config">
+  <div class="form-row">
+    <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-config-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-consumer_key"><i class="fa fa-lock"></i> Consumer Key</label>
+    <input type="password" id="node-config-input-consumer_key">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-consumer_secret"><i class="fa fa-lock"></i> Consumer Secret</label>
+    <input type="password" id="node-config-input-consumer_secret">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-access_token_key"><i class="fa fa-lock"></i> Access Token Key</label>
+    <input type="password" id="node-config-input-access_token_key">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-access_token_secret"><i class="fa fa-lock"></i> Access Token Secret</label>
+    <input type="password" id="node-config-input-access_token_secret">
+  </div>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('Twitter-User-Timeline-config', {
+    category: "config",
+    color: "rgb(114, 199, 231)",
+    defaults: {
+      name: {
+        value: ""
+      }
+    },
+    credentials: {
+      consumer_key: {
+        type: "password",
+        required: true
+      },
+      consumer_secret: {
+        type: "password",
+        required: true
+      },
+      access_token_key: {
+        type: "password",
+        required: true
+      },
+      access_token_secret: {
+        type: "password",
+        required: true
+      }
+    },
+    label: function() {
+      return this.name;
+    }
+  });
+</script>
+
+
+
+<script type="text/x-red" data-template-name="Twitter-User-Timeline">
+  <div class="form-row">
+    <label for="node-input-twitterconfig"><i class="fa fa-globe"></i> Credentials</label>
+    <input type="text" id="node-input-twitterconfig">
+  </div>
+  <div class="form-row">
+    <label for="node-input-screenname">Screen Name</label>
+    <input type="text" id="node-input-screenname" placeholder="screenname">
+  </div>
+  <div class="form-row">
+    <label for="node-input-count">Count (1-200)</label>
+    <input type="text" id="node-input-count" placeholder="100">
+  </div>
+  <div class="form-row">
+    <label style="width:30%">Include retweets?</label>
+    <input type="checkbox" id="node-input-includerts" style="width:auto; vertical-align:top;">
+    <label for="node-input-includerts" style="width:auto;"> Include retweets</label>
+  </div>
+  <div class="form-row">
+    <label style="width:30%">Trim User?</label>
+    <input type="checkbox" id="node-input-trimuser" style="width:auto; vertical-align:top;">
+    <label for="node-input-trimuser" style="width:auto;"> Trim User</label>
+  </div>
+  <div class="form-row">
+    <label style="width:30%">Exclude Replies?</label>
+    <input type="checkbox" id="node-input-excludereplies" style="width:auto; vertical-align:top;">
+    <label for="node-input-excludereplies" style="width:auto;"> Exclude Replies</label>
+  </div>
+  <div class="form-row">
+    <label style="width:30%">Contributor Details?</label>
+    <input type="checkbox" id="node-input-contributordetails" style="width:auto; vertical-align:top;">
+    <label for="node-input-contributordetails" style="width:auto;"> Contributor Details</label>
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="Twitter-User-Timeline">
+  <p>This node can get the user timeline of the specified screen_name. However, only if the user information is not hidden or if you accept the follow request from the authenticated user.</p>
+  <p>
+      The input message contains the following properties:
+      <ul>
+          <li><code>msg.payload.screenname</code> : (String) The screen name of the user for whom to return results.</li>
+          <li><code>msg.payload.count</code> : (int) Specifies the number of Tweets to try and retrieve. (1-200)</li>
+          <li><code>msg.payload.includerts</code> : (Boolean)</li>
+          <li><code>msg.payload.trimuser</code> : (Boolean)</li>
+          <li><code>msg.payload.excludereplies</code> : (Boolean)</li>
+          <li><code>msg.payload.contributordetails</code> : (Boolean)</li>
+      </ul>
+  </p>
+  <p>
+      The output message contains the following properties:
+      <ul>
+          <li><code>msg.payload.statusCode</code> : (int) Response StatusCode. (200 or 401)</li>
+          <li><code>msg.payload.tweets</code> : (array) ScreenName’s tweets. (ONLY statusCode is 200)</li>
+      </ul>
+  </p>
+  <p>The following is required before you can continue
+    <li>Twitter development account</br><a href="https://dev.twitter.com">dev.twitter.com</a></li>
+    <li>Twitter application </br><a href="https://apps.twitter.com">apps.twitter.com</a></li>
+  </p>
+
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('Twitter-User-Timeline', {
+    category: 'social',
+    defaults: {
+      name: {
+        value: ""
+      },
+      twitterconfig: {
+        type: "Twitter-User-Timeline-config",
+        required: true
+      },
+      screenname: {
+        value: ""
+      },
+      count: {
+        value: ""
+      },
+      includerts: {
+        value: false
+      },
+      trimuser: {
+        value: true
+      },
+      excludereplies: {
+        value: true
+      },
+      contributordetails: {
+        value: false
+      }
+    },
+    color: "#C0DEED",
+    inputs: 1,
+    outputs: 1,
+    icon: "twitter.png",
+    label: function() {
+      return this.name || "Twitter User Timeline";
+    },
+    labelStyle: function() {
+      return this.name ? "node_label_italic" : "";
+    }
+  });
+</script>
